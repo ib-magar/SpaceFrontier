@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEditor.ShaderKeywordFilter;
 using UnityEditor.Timeline;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RockerScript : MonoBehaviour
 {
@@ -38,6 +39,9 @@ public class RockerScript : MonoBehaviour
     [Header("head")]
     [SerializeField] Transform _head;
 
+    //DoTween variables
+    public Tween _currentTween;
+
     public event Action _LaunchStarted;
     IEnumerator  Start()
     {
@@ -68,27 +72,52 @@ public class RockerScript : MonoBehaviour
         {
         _trailObject.position = _currentTrailHandler.position;
         }
+
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            SkipOneContainer();
+        }
         
     }
-    void BurnTheContainer(Transform _containerToBurn)
+    public void SkipOneContainer()
     {
-        _trailObject.GetComponent<TrailRenderer>().startWidth = _currentContainer.localScale.x-.2f;
-        _containerToBurn.DOScaleY(0, _containerBurnTime).SetEase(Ease.Linear).OnComplete(() =>
+            if (_currentTween != null && !_currentTween.IsComplete())
+            {
+                //DOTween.Kill(_currentTween);
+                _currentTween.Kill(true);
+                //FinishTheCurrentContainer();
+                Debug.Log("Tween is not finished!");
+            }
+
+    }
+     void BurnTheContainer(Transform _containerToBurn)
+    {
+        if(_containerToBurn!=null)
         {
-            _containerHolder.destroyLastContainer();
-            _currentTrailHandler = _containerHolder.getCurrentTrailTransform();
-            if (_containerHolder.getContainerCount() > -1)
+
+            _trailObject.GetComponent<TrailRenderer>().startWidth = _currentContainer.localScale.x - .18f;
+            _currentTween = _containerToBurn.DOScaleY(0, _containerBurnTime).SetEase(Ease.Linear).OnComplete(() =>
             {
-                _currentContainer = _containerHolder.getLastContainer();
-                BurnTheContainer(_currentContainer);
-            }
-                            // make sure the head and the neck container has the smae width.
-            if(_containerHolder.getContainerCount()==-1)            //when the last container is going on   
-            {
-                _trailObject.GetComponent<TrailRenderer>().startWidth = _head.localScale.x;
-            }
-           
-        });
+                FinishTheCurrentContainer();
+                //Debug.Log("tween finished");
+                //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            });
+        }
+        else
+        {
+            Debug.Log("game over");
+        }
+    }
+
+    private void FinishTheCurrentContainer()
+    {
+        _containerHolder.destroyLastContainer();
+        _currentTrailHandler = _containerHolder.getCurrentTrailTransform();
+        if (_containerHolder.getContainerCount() > -1)
+        {
+            _currentContainer = _containerHolder.getLastContainer();
+            BurnTheContainer(_currentContainer);
+        }
     }
 
 }

@@ -16,7 +16,9 @@ public class Container_Holder : MonoBehaviour
     }
     public Transform getLastContainer()
     {
-        return _containersList[_currentContainerCount--];
+        if (_currentContainerCount - 1 > -2)
+            return _containersList[_currentContainerCount--];
+        else return null;   
     }
     public void destroyLastContainer()
     {
