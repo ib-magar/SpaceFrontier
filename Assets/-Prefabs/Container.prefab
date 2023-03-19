@@ -270,7 +270,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hitTarget: {fileID: 6631939216466062387}
-  _hitTargetScale: 0.2
+  _hitTargetScale: 0.1
   _parentTarget: {fileID: 6203679991001607499}
 --- !u!1 &7668303501170119539
 GameObject:

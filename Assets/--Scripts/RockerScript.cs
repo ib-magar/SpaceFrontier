@@ -2,6 +2,7 @@ using Cinemachine;
 using DG.Tweening;
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -40,7 +41,14 @@ public class RockerScript : MonoBehaviour
     public Transform _currentTrailHandler;
 
     [Header("head")]
+    [SerializeField] Transform _head;
     [SerializeField] Transform _headBaseTransform;
+    [SerializeField] float _thrustForce;
+    [SerializeField] GameObject _containersHolderObject;
+
+    [Header("particle system")]
+    [SerializeField] ParticleSystem _BoostEffect;
+    [SerializeField] GameObject _dieParticleEffect;
 
     //DoTween variables
     public Tween _currentTween;
@@ -122,6 +130,7 @@ public class RockerScript : MonoBehaviour
     public void SkipOneContainer()
     {
             CameraManager._instance._smallShake();
+            _BoostEffect.Emit(5);
             if (_currentTween != null && !_currentTween.IsComplete())
             {
             StartCoroutine(BoostUpRocket());
@@ -154,10 +163,16 @@ public class RockerScript : MonoBehaviour
                 else
                 {
                     //die 
-                    // Debug.Log("Die");
-                    _containerToBurn = null;
-                    //_speedMultiplier = 0f;
-                    StartCoroutine(Restart());
+                    _speedMultiplier = 2f;
+                    //_containerToBurn = null;
+                    AudioManager._instance.DieSoundPlay();
+                    AudioManager._instance.ContainerBlastSound();
+                    Instantiate(_dieParticleEffect, _currentContainer.position, Quaternion.identity);
+                    UIManager._instance.DeathMenu();
+                    //StartCoroutine(Restart());
+                    _containersHolderObject.SetActive(false);
+                    _head.gameObject.SetActive(false);
+                    _trailObject.gameObject.SetActive(false);
                 }
             });
         }
@@ -178,16 +193,34 @@ public class RockerScript : MonoBehaviour
         }
         else
         {
+            Destroy(GetComponent<Rigidbody2D>());
+            _canFly = false;
+            Rigidbody2D headRb= _head.AddComponent<Rigidbody2D>();
+            _head.DORotate(new Vector3(0f, 0f, 30f), 1f).SetEase(Ease.Linear).OnUpdate(() =>
+            {
+                headRb.AddForce(headRb.transform.up * _thrustForce);
+            }).OnComplete(() =>
+            {
+                _head.DORotate(new Vector3(0f, 0f, 180f), 1f).SetEase(Ease.Linear);
+            });
+            
             //_currentContainer = _headBaseTransform;
             _currentTrailHandler = _headBaseTransform;
-            Debug.Log("Win");
+            //Debug.Log("Win");
+            UIManager._instance.DeathMenu();
+            AudioManager._instance.VictorySoundPlay();
             if (_LaunchStarted != null) _LaunchStarted(2);
             //StartCoroutine(Restart());
         }
     }
+    public void thrustHeadContainer()
+    {
+        //
+    }
     IEnumerator Restart()
     {
-        yield return new WaitForSeconds(3f);
+        
+        yield return new WaitForSeconds(2f);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     private void OnTriggerEnter2D(Collider2D collision)

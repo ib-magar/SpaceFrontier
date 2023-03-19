@@ -73,7 +73,11 @@ public class Container_Holder : MonoBehaviour
             
         }).SetEase(Ease.InBounce).OnComplete(() =>
         {
+            float r = Random.value;
+            if(r>.5f)
            _containersList.Add(Instantiate(_Container_1, _containersList[_currentContainerCount].GetChild(1).position, Quaternion.identity, _containerHolder).transform);
+            else
+           _containersList.Add(Instantiate(_Container_2, _containersList[_currentContainerCount].GetChild(1).position, Quaternion.identity, _containerHolder).transform);
             _currentContainerCount++;
             _rocket._currentTrailHandler = _containersList[_currentContainerCount].GetChild(1);
         });

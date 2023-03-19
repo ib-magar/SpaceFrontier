@@ -10,17 +10,6 @@ public class ContainerScript : MonoBehaviour
     [SerializeField] Transform _parentTarget;
     private void Update()
     {
-        /*if(_parentTarget.localScale.y<=1 && _parentTarget.localScale.y>=_hitTargetScale)
-        {
-            _hitTarget.localScale = new Vector2(_parentTarget.localScale.x, (_hitTargetScale + (1 - _parentTarget.localScale.y)));
-        }else if(_parentTarget.localScale.y<_hitTargetScale)
-        {
-            _hitTarget.localScale = new Vector2(1f, 1f);
-        }
-        else
-        {
-            _hitTarget.localScale = new Vector2(1f, _hitTargetScale);
-        }*/
 
         if(_parentTarget.localScale.y>=1f)
         {
