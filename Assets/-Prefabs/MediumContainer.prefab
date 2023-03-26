@@ -223,7 +223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hitTarget: {fileID: 8780765289584509723}
-  _hitTargetScale: 0.1
+  _hitTargetScale: 0.15
   _parentTarget: {fileID: 8342087091922633315}
 --- !u!1 &8342087093610897339
 GameObject:

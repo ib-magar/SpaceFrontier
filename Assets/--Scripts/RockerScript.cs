@@ -117,12 +117,17 @@ public class RockerScript : MonoBehaviour
         }
         
     }
-    IEnumerator BoostUpRocket(bool _isBoost=false)
+    IEnumerator BoostUpRocket(bool _isBoost=false,bool _isGreen=false)
     {
         if (_isBoost)
             boostUpValue = _speedMultiplierRate;
         else
-            boostUpValue = _speedBoostMultiplierRate;
+        {
+            if (_isGreen)
+                boostUpValue = _speedBoostMultiplierRate * 2.5f;
+            else
+                boostUpValue = _speedBoostMultiplierRate;
+        }
 
         yield return new WaitForSeconds(.3f);
         boostUpValue = 1f;
@@ -133,7 +138,10 @@ public class RockerScript : MonoBehaviour
             _BoostEffect.Emit(5);
             if (_currentTween != null && !_currentTween.IsComplete())
             {
-            StartCoroutine(BoostUpRocket());
+            if(_currentContainer.localScale.y<.15f)
+            StartCoroutine(BoostUpRocket(true,true));
+            else
+            StartCoroutine(BoostUpRocket(true,false));
             _isContainerPushed = true;
                 //DOTween.Kill(_currentTween);
                 _currentTween.Kill(true);
